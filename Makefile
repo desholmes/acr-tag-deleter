@@ -2,10 +2,10 @@
 build push pull run run-clean
 
 -include .env
+-include version.properties
 
 export REGISTRY=desholmes
 export REPOSITORY=acr-rc-deleter
-export VERSION=0.1.0
 
 clean-dangling-images:
 	@docker rmi -f $$(docker images -f 'dangling=true' -q)
@@ -18,8 +18,6 @@ build:
 	docker build \
 		--build-arg APP_VERSION="$(VERSION)" \
 		-t $(REGISTRY)/$(REPOSITORY):$(VERSION) .
-
-docker build --build-arg APP_VERSION=0.1.0 -t desholmes/acr-rc-deleter:latest .
 
 build-and-push:
 	@make -s build
@@ -37,10 +35,10 @@ run:
 		-e REGISTRY_USERNAME=$(REGISTRY_USERNAME) \
 		-e REGISTRY_PASSWORD=$(REGISTRY_PASSWORD) \
 		-e REPO=$(REPO) \
-		-e VERSION=$(VERSION) \
+		-e TAG=$(TAG) \
 		-e DRY_RUN=$(DRY_RUN) \
 		-v $(PWD)/untag.sh:/usr/src/untag.sh \
-		$(REGISTRY)/$(REPOSITORY):$(VERSION)
+	$(REGISTRY)/$(REPOSITORY):$(VERSION)
 
 run-clean:
 	@make -s delete-image & make build

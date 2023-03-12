@@ -10,7 +10,7 @@ echoInfo "ACR RC Untagger (v$APP_VERSION)"
 # Check required environment variables are set
 for envVar in AZURE_TENANT \
          AZURE_SUBSCRIPTION \
-         VERSION \
+         TAG \
          REPO \
          REGISTRY_NAME \
          REGISTRY_USERNAME \
@@ -47,19 +47,19 @@ fi
 
 function remove_rc_tags {
   ## Fetch RC images
-  echoInfo "Attempting to fetch rc tags for repo: '$1', version: '$VERSION'"
+  echoInfo "Attempting to fetch rc tags for repo: '$1', tag: '$TAG'"
 
   # Note: Incorrect REGISTRY_NAME or REPO will display 'az acr' message and exit 1
   allTags=$(az acr repository show-tags --subscription "$AZURE_SUBSCRIPTION" --name "$REGISTRY_NAME" --repository "$1")
 
-  rcTags=$(echo "$allTags" | jq -c '[.[] | select(contains ("'$VERSION'rc"))]')
+  rcTags=$(echo "$allTags" | jq -c '[.[] | select(contains ("'$TAG'-rc"))]')
   rcCount=$(echo "$rcTags" | jq -c '. | length')
 
   # Do we have rc tags?
   if [[ -z ${rcCount} || ${rcCount} == "0" ]];
   then
     echoInfo "No rc tags found, exiting"
-    return
+    exit 0
   fi
 
   echoInfo "Fetching rc tags successful. Found: '$rcCount'"

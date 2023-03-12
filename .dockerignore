@@ -1,5 +1,7 @@
 .DS_Store
 .git*
 .env*
+LICENSE
 Makefile
 README.md
+version.properties
